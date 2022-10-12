@@ -1,8 +1,9 @@
 #!/bin/bash -l
 
+#command to download a file, but will actually use a different file to run the code
 curl -o calfires.csv https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::recent-large-fire-perimeters-5000-acres.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D
 
-MINYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | sed '1d' | head -n 1` 
+MINYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | sed '1d' | head -n 1` #using calfires_2021.csv because the formatting is verified
 MAXYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | tail -n 1`
 
 echo "This report has the years: $MINYEAR-$MAXYEAR"
