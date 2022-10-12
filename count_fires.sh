@@ -2,8 +2,6 @@
 
 curl -o calfires.csv https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::recent-large-fire-perimeters-5000-acres.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D
 
-awk -F, '{print $2}' calfires_2021.csv | sort -n #prints out the range of years sorted with the header
-
 MINYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | sed '1d' | head -n 1` 
 MAXYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | tail -n 1`
 
@@ -26,5 +24,5 @@ echo "The largest fire, $LARGESTFIRE, burned in $LARGESTFIREYEAR"
 for YEAR in `awk -F, '{print $2}' calfires_2021.csv | sort -n | uniq | sed '1d' `
 do
 TOTAL=`awk -F, '{print $2,$13}' calfires_2021.csv | sort -n | grep $YEAR | awk '{sum+=$2;} END{print sum;}'`
-echo "In Year $YEAR, Total was $TOTAL"
+echo "In Year $YEAR, Total acreage burned was $TOTAL"
 done
