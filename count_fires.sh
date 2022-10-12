@@ -1,32 +1,30 @@
 #!/bin/bash -l
 
-# step to write
-# download the CSV file
-# curl -o calfire.csv ...
+curl -o calfires.csv https://gis.data.cnra.ca.gov/datasets/CALFIRE-Forestry::recent-large-fire-perimeters-5000-acres.csv?outSR=%7B%22latestWkid%22%3A3857%2C%22wkid%22%3A102100%7D
 
-# print out the range of years found -- you may need to go in and edit the file
-# cut -d, ....
-MINYEAR=1900
-MAXYEAR=1901
-# write code to set these variables with the smallest and largest years
+awk -F, '{print $2}' calfires_2021.csv | sort -n #prints out the range of years sorted with the header
+
+MINYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | sed '1d' | head -n 1` 
+MAXYEAR=`awk -F, '{print $2}' calfires_2021.csv | sort -n | tail -n 1`
+
 echo "This report has the years: $MINYEAR-$MAXYEAR"
-# if you have problems the CSV file already part of this repository so you can use 'calfires_2021.csv'
 
-# print out the total number of fires (remember to remove the header line)
-TOTALFILECOUNT=0
-# put your code here to update this variable
-echo "Total number of files: $TOTALFILECOUNT"
+TOTALFIRECOUNT=`cat calfires_2021.csv | sed '1d' | wc -l` 
 
-# print out the number of fire in each year
-echo "Number of fires in each year follows:"
+echo "The total number of fires is: $TOTALFIRECOUNT" #prints out the total number of fires. This is equal to the number of rows, not including the header
 
+echo "The number of fires in each year is as follows: "
 
-# print out the name of the largest file use the GIS_ACRES and report the number of acres
-echo "Largest fire was $LARGEST and burned $LARGESTACRES"
+awk -F, '{print $2}' calfires_2021.csv | sort -n | uniq -c | sed '1d'
 
-# print out the years - change the code in $(echo 1990) to print out the years (hint - how did you get MINYEAR and MAXYEAR?
-for YEAR in $(echo 1990)
+LARGESTFIRE=`awk -F, '{print $13,$6,$2}' calfires_2021.csv | sort -nr | awk '{print $2, $3}' | head -n 1` #prints out the name of the largest fire
+
+LARGESTFIREYEAR=`awk -F, '{print $13,$6,$2}' calfires_2021.csv | sort -nr | awk '{print $4}' | head -n 1` #prints out the year of the largest fire
+
+echo "The largest fire, $LARGESTFIRE, burned in $LARGESTFIREYEAR"
+
+for YEAR in `awk -F, '{print $2}' calfires_2021.csv | sort -n | uniq | sed '1d' `
 do
-#      TOTAL=$(grep ... | awk ...)
-      echo "In Year $YEAR, Total was $TOTAL"
+TOTAL=`awk -F, '{print $2,$13}' calfires_2021.csv | sort -n | grep $YEAR | awk '{sum+=$2;} END{print sum;}'`
+echo "In Year $YEAR, Total was $TOTAL"
 done
